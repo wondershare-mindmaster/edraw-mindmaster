@@ -1,0 +1,35 @@
+name: heimer
+version: '4.5.0'
+summary: Heimer is a simple cross-platform mind map tool.
+description: |
+  Heimer is a simple cross-platform mind map creation tool.
+  Emphasis on easy diagram creation, simplicity, and speed.
+grade: stable
+confinement: strict
+base: core22
+icon: data/icons/heimer.png
+
+apps:
+  heimer:
+    command: usr/bin/heimer
+    # Provides Qt 6, desktop integration and the common desktop plugs
+    extensions: [kde-neon-6]
+    desktop: usr/share/applications/heimer.desktop
+    plugs: [home, removable-media]
+
+parts:
+  heimer:
+    source: .
+    plugin: cmake
+    cmake-parameters:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DBUILD_TESTS=OFF
+      - -DPACKAGE_TYPE=Snap
+    override-prime: |
+      set -eu
+
+      craftctl default
+
+      # Fix-up application icon lookup
+      sed --in-place 's|^Icon=.*|Icon=\${SNAP}/meta/gui/icon.png|' usr/share/applications/heimer.desktop
